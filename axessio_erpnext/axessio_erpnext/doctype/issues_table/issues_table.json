@@ -1,0 +1,48 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-21 19:10:59.487993",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "issue",
+  "issue_type",
+  "issue_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "issue",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Issue",
+   "options": "Issue"
+  },
+  {
+   "fetch_from": "issue.issue_type",
+   "fieldname": "issue_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Issue Type"
+  },
+  {
+   "fetch_from": "issue.status",
+   "fieldname": "issue_status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Issue Status"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-03-21 19:14:57.011858",
+ "modified_by": "Administrator",
+ "module": "Axessio Erpnext",
+ "name": "Issues Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

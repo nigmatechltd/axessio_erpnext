@@ -137,13 +137,16 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	# "*": {
+	# 	"on_update": "method",
+	# 	"on_cancel": "method",
+	# 	"on_trash": "method"
+	# }
+    "Issue" : {
+        "after_insert" : "axessio_erpnext.overrides.issue_after_insert"
+    }
+}
 
 # Scheduled Tasks
 # ---------------
