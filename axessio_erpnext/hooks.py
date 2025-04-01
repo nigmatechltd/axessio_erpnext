@@ -84,7 +84,7 @@ app_license = "mit"
 
 # before_install = "axessio_erpnext.install.before_install"
 # after_install = "axessio_erpnext.install.after_install"
-
+after_migrate = "axessio_erpnext.overrides.run_after_migrate"
 # Uninstallation
 # ------------
 

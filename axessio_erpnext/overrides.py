@@ -77,3 +77,28 @@ def get_linked_property(sender_email,recipient_email):
             employee = frappe.db.get_value("Employee",{"personal_email":recipient_email},"name")
             property_unit = frappe.db.get_value("Property",{"custom_property_manager":employee},"name")
     return property_unit,employee
+
+
+
+def run_after_migrate():
+    add_options_to_issue_type()
+
+def add_options_to_issue_type():
+    if frappe.db.exists("Property Setter", "Issue-status-options"):
+        frappe.db.delete("Property Setter", "Issue-status-options")
+    issue_status =  frappe.get_meta("Issue").get_field("status")
+    issue_status_options = issue_status.options
+    
+    issue_status_options = issue_status_options.split("\n")
+    new_options = ["beauftragt","nicht begonnen","erledigt","angefangen","wiederkehrend"]
+    for status in new_options:
+        if status not in issue_status_options:
+            issue_status_options.append(status)
+    
+    issue_status_options = "\n".join(issue_status_options)
+        
+    issue_status.options = issue_status_options
+    frappe.log_error("options",issue_status_options)
+    frappe.db.delete("Property Setter", "Issue-status-options")
+    issue_status.save()
+    frappe.db.commit()
