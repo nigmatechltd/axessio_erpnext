@@ -89,8 +89,8 @@ def add_options_to_issue_type():
     issue_status =  frappe.get_meta("Issue").get_field("status")
     issue_status_options = issue_status.options
     
-    issue_status_options = issue_status_options.split("\n")
-    new_options = ["beauftragt","nicht begonnen","erledigt","angefangen","wiederkehrend"]
+    issue_status_options = [] #issue_status_options.split("\n")
+    new_options = ["nicht begonnen","beauftragt","erledigt","angefangen","wiederkehrend"]
     for status in new_options:
         if status not in issue_status_options:
             issue_status_options.append(status)
