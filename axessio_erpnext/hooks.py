@@ -151,23 +151,13 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"axessio_erpnext.tasks.all"
-# 	],
-# 	"daily": [
-# 		"axessio_erpnext.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"axessio_erpnext.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"axessio_erpnext.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"axessio_erpnext.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"cron": {
+		"0/5 * * * *": [
+			"frappe.email.doctype.email_account.email_account.pull",
+		],
+	}
+}
 
 # Testing
 # -------
