@@ -1,5 +1,6 @@
 import frappe
-
+from frappe.model.naming import make_autoname
+from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket
 
 def custom_create_reference_document(self, doctype):
     """Create reference document if it does not exist in the system."""
@@ -64,7 +65,6 @@ def get_linked_property(sender_email,recipient_email):
         contact = frappe.db.get_value("Contact",{"email_id":sender_email},"name")
         #get linked customer if existing
         customer = frappe.db.get_value("Dynamic Link",{"parenttype":"Contact","parent":contact,"link_doctype":"Customer"},"link_name")
-        print(customer)
         if customer:
             #get property unit from customer lease
             property_unit = frappe.db.get_value("Lease",{"lease_customer":customer},"property")
@@ -83,6 +83,7 @@ def get_linked_property(sender_email,recipient_email):
 def run_after_migrate():
     add_options_to_issue_type()
 
+
 def add_options_to_issue_type():
     if frappe.db.exists("Property Setter", "Issue-status-options"):
         frappe.db.delete("Property Setter", "Issue-status-options")
@@ -98,7 +99,20 @@ def add_options_to_issue_type():
     issue_status_options = "\n".join(issue_status_options)
         
     issue_status.options = issue_status_options
-    frappe.log_error("options",issue_status_options)
     frappe.db.delete("Property Setter", "Issue-status-options")
     issue_status.save()
     frappe.db.commit()
+    
+
+class CustomHDTicket(HDTicket):
+    
+   def autoname(self):
+       frappe.log_error("autoname")
+       
+   
+   def validate(self):
+        if self.is_new():
+            self.name = make_autoname("TI.YY.MM.DD.-.#####")
+        
+       
+       

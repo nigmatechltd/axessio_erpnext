@@ -129,9 +129,9 @@ after_migrate = "axessio_erpnext.overrides.run_after_migrate"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"HD Ticket": "axessio_erpnext.overrides.CustomHDTicket"
+}
 
 # Document Events
 # ---------------
