@@ -16,7 +16,7 @@ def custom_create_reference_document(self, doctype):
             #find if an existing employee exists under this email
             #do this only if on issue
             property_unit,property_manager = get_linked_property(frappe.as_unicode(self.from_email),self.email_account.email_id)
-            parent.set("property_name",property_unit)
+            parent.set("custom_property_unit",property_unit)
             parent.set("person_in_charge",property_manager)
                 
                     
@@ -34,19 +34,19 @@ def custom_create_reference_document(self, doctype):
     except:
         frappe.log_error("create_documents",frappe.get_traceback())
 
-def issue_after_insert(doc,event):
+def ticket_after_insert(doc,event):
     #update issues table in Property Unit.
-    if doc.property_name:
-        issue = frappe.get_doc({
-            "doctype" : "Issues Table",
-            "issue" : doc.name,
-            "issue_type" : doc.issue_type,
-            "issue_status" : doc.status,
-            "parent": doc.property_name,
+    if doc.custom_property_unit:
+        hdticket = frappe.get_doc({
+            "doctype" : "Ticket Table",
+            "ticket" : doc.name,
+            "ticket_type" : doc.ticket_type,
+            "ticket_status" : doc.status,
+            "parent": doc.custom_property_unit,
             "parentfield": "custom_tickets",
             "parenttype": "Property"
         })
-        issue.insert()
+        hdticket.insert()
         
 
 

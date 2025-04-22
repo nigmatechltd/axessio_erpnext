@@ -6,40 +6,40 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "issue",
-  "issue_type",
-  "issue_status"
+  "ticket",
+  "ticket_type",
+  "ticket_status"
  ],
  "fields": [
   {
-   "fieldname": "issue",
+   "fieldname": "ticket",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Issue",
-   "options": "Issue"
+   "label": "Ticket",
+   "options": "HD Ticket"
   },
   {
    "fetch_from": "issue.issue_type",
-   "fieldname": "issue_type",
+   "fieldname": "ticket_type",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Issue Type"
+   "label": "Ticket Type"
   },
   {
    "fetch_from": "issue.status",
-   "fieldname": "issue_status",
+   "fieldname": "ticket_status",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Issue Status"
+   "label": "Ticket Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-03-21 19:14:57.011858",
+ "modified": "2025-04-22 09:17:28.068663",
  "modified_by": "Administrator",
  "module": "Axessio Erpnext",
- "name": "Issues Table",
+ "name": "Ticket Table",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",

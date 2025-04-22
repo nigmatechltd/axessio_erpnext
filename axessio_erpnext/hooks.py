@@ -144,8 +144,8 @@ doc_events = {
 	# 	"on_cancel": "method",
 	# 	"on_trash": "method"
 	# }
-    "Issue" : {
-        "after_insert" : "axessio_erpnext.overrides.issue_after_insert"
+    "HD Ticket" : {
+        "after_insert" : "axessio_erpnext.overrides.ticket_after_insert"
     }
 }
 
