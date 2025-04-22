@@ -126,11 +126,10 @@ def add_options_to_hd_ticket():
 
 class CustomHDTicket(HDTicket):
     
-   def autoname(self):
-       frappe.log_error("autoname")
-       
+      
    
    def validate(self):
+        return       
         if self.is_new():
             self.name = make_autoname("TI.YY.MM.DD.-.#####")
         
