@@ -82,6 +82,7 @@ def get_linked_property(sender_email,recipient_email):
 
 def run_after_migrate():
     add_options_to_issue_type()
+    add_options_to_hd_ticket()
 
 
 def add_options_to_issue_type():
@@ -100,6 +101,25 @@ def add_options_to_issue_type():
         
     issue_status.options = issue_status_options
     frappe.db.delete("Property Setter", "Issue-status-options")
+    issue_status.save()
+    frappe.db.commit()
+    
+
+def add_options_to_hd_ticket():
+    
+    issue_status =  frappe.get_meta("HD Ticket").get_field("status")
+    issue_status_options = issue_status.options
+    
+    issue_status_options = issue_status_options.split("\n")
+    new_options = ["Open","nicht begonnen","beauftragt","erledigt","angefangen",
+                   "wiederkehrend","Replied","Resolved","Closed"]
+    for status in new_options:
+        if status not in issue_status_options:
+            issue_status_options.append(status)
+    
+    issue_status_options = "\n".join(issue_status_options)
+        
+    issue_status.options = issue_status_options
     issue_status.save()
     frappe.db.commit()
     
