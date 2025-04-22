@@ -1,12 +1,15 @@
 import frappe
 from frappe.model.naming import make_autoname
 from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket
+from frappe.desk.form.assign_to import add
 
 def custom_create_reference_document(self, doctype):
     """Create reference document if it does not exist in the system."""
     try:
         parent = frappe.new_doc(doctype)
         email_fields = self.get_email_fields(doctype)
+       
+        
         if email_fields.subject_field:
             parent.set(email_fields.subject_field, frappe.as_unicode(self.subject)[:140])
 
@@ -18,15 +21,17 @@ def custom_create_reference_document(self, doctype):
             property_unit,property_manager = get_linked_property(frappe.as_unicode(self.from_email),self.email_account.email_id)
             parent.set("custom_property_unit",property_unit)
             parent.set("person_in_charge",property_manager)
+            parent.set("description",frappe.as_unicode(self.content))
                 
                     
         if email_fields.sender_name_field:
             parent.set(email_fields.sender_name_field, frappe.as_unicode(self.from_real_name))
 
         parent.flags.ignore_mandatory = True
-
         try:
             parent.insert(ignore_permissions=True)
+            assign_ticket_to_recipient(parent,self.email_account.email_id)
+            
             return parent.name
         except frappe.DuplicateEntryError:
             # try and find matching parent
@@ -47,7 +52,19 @@ def ticket_after_insert(doc,event):
             "parenttype": "Property"
         })
         hdticket.insert()
-        
+    
+
+def assign_ticket_to_recipient(parent,recipient_email):
+    
+    
+    add({
+        "doctype": "HD Ticket", 
+        "name": parent.get("name"),
+        "assign_to": [recipient_email],
+        "description": parent.get("description","HD Ticket assigned"),
+        "date": frappe.utils.getdate()
+    })
+    frappe.db.commit()    
 
 
 def get_linked_property(sender_email,recipient_email):
@@ -128,8 +145,7 @@ class CustomHDTicket(HDTicket):
     
       
    
-   def validate(self):
-        return       
+   def validate(self):      
         if self.is_new():
             self.name = make_autoname("TI.YY.MM.DD.-.#####")
         
