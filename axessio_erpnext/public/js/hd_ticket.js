@@ -5,7 +5,7 @@ frappe.ui.form.on('HD Ticket', {
         frappe.call({
             method:"axessio_erpnext.overrides.get_lease_details",
             args:{
-                "lease" : cur_frm.doc.custom_lease,
+                "lease" : frm.doc.custom_lease,
 
             },
             callback:function(r){
