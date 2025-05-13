@@ -2,6 +2,7 @@ import frappe
 from frappe.model.naming import make_autoname
 from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket
 from frappe.desk.form.assign_to import add
+import json
 
 def custom_create_reference_document(self, doctype):
     """Create reference document if it does not exist in the system."""
@@ -149,5 +150,31 @@ class CustomHDTicket(HDTicket):
         if self.is_new():
             self.name = make_autoname("TI.YY.MM.DD.-.#####")
         
-       
+
+
+def send_email(doc):
+    
+    if isinstance(doc,str):
+        doc = json.loads(doc)
+    
+
+def get_lease(lease):
+    
+    if frappe.db.exists("Lease",lease):
+        lease_doc = frappe.get_doc("Lease", lease)
+        lease_customer = lease_doc.lease_customer
+        lease_company = lease_doc.company
+        property = lease_doc.property
+        property_address= lease_doc.property_address
+        employee = frappe.db.get_value("Property",property,"custom_property_manager")
+        lease_data = {"lease_customer":lease_customer,"lease_company":lease_company,
+                      "property":property,"property_address":property_address,
+                      "employee" : employee
+                      }
+        if lease_customer:
+            mobile_no = frappe.db.get_value("Customer",lease_customer,"mobile_no")
+            email_id = frappe.db.get_value("Customer",lease_customer,"email_id")
+            lease_data.update({"mobile_no":mobile_no,"email_id":email_id})
+        
+        return lease_data
        
