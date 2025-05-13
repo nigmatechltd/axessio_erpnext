@@ -157,8 +157,8 @@ def send_email(doc):
     if isinstance(doc,str):
         doc = json.loads(doc)
     
-
-def get_lease(lease):
+@frappe.whitelist()
+def get_lease_details(lease):
     
     if frappe.db.exists("Lease",lease):
         lease_doc = frappe.get_doc("Lease", lease)
