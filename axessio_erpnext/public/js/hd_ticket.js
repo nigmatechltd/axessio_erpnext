@@ -12,7 +12,7 @@ frappe.ui.form.on('HD Ticket', {
                 var data = r["message"]
                 //set values
                 frm.set_value("custom_property_unit",data["property"])
-                frm.set_value("customer",data["lease_customer"])
+                frm.set_value("custom_lease_customer",data["lease_customer"])
                 frm.set_value("custom_customer_contact_email",data["contact_email"])
                 frm.set_value("custom_customer_contact_phone",data["email_id"])
                 frm.set_value("custom_person_in_charge",data["employee"])
