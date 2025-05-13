@@ -1,6 +1,6 @@
 frappe.ui.form.on('HD Ticket', {
 
-    custom_lease : function(){
+    custom_lease : function(frm){
         // get value of property,customer and customer email if existing
         frappe.call({
             method:"axessio_erpnext.overrides.get_lease_details",
