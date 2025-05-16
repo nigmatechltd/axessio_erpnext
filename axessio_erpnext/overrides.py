@@ -3,42 +3,97 @@ from frappe.model.naming import make_autoname
 from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket
 from frappe.desk.form.assign_to import add
 import json
+from frappe.email.receive import InboundMail
 
-def custom_create_reference_document(self, doctype):
-    """Create reference document if it does not exist in the system."""
-    try:
-        parent = frappe.new_doc(doctype)
-        email_fields = self.get_email_fields(doctype)
-       
-        
-        if email_fields.subject_field:
-            parent.set(email_fields.subject_field, frappe.as_unicode(self.subject)[:140])
 
-        if email_fields.sender_field:
-            parent.set(email_fields.sender_field, frappe.as_unicode(self.from_email))
-            #get property from recipient name
-            #find if an existing employee exists under this email
-            #do this only if on issue
-            property_unit,property_manager = get_linked_property(frappe.as_unicode(self.from_email),self.email_account.email_id)
-            parent.set("custom_property_unit",property_unit)
-            parent.set("person_in_charge",property_manager)
-            parent.set("description",frappe.as_unicode(self.content))
-                
-                    
-        if email_fields.sender_name_field:
-            parent.set(email_fields.sender_name_field, frappe.as_unicode(self.from_real_name))
+from frappe.utils import (
+    sanitize_html
+)
 
-        parent.flags.ignore_mandatory = True
+class CustomInboundMail(InboundMail):
+    
+    
+    def _create_reference_document(self, doctype):
+        """Create reference document if it does not exist in the system."""
         try:
-            parent.insert(ignore_permissions=True)
-            assign_ticket_to_recipient(parent,self.email_account.email_id)
+            parent = frappe.new_doc(doctype)
+            email_fields = self.get_email_fields(doctype)
             
-            return parent.name
-        except frappe.DuplicateEntryError:
-            # try and find matching parent
-            return frappe.db.get_value(doctype, {email_fields.sender_field: self.from_email})
-    except:
-        frappe.log_error("create_documents",frappe.get_traceback())
+            print(doctype)
+            if email_fields.subject_field:
+                parent.set(email_fields.subject_field, frappe.as_unicode(self.subject)[:140])
+
+            if email_fields.sender_field:
+                parent.set(email_fields.sender_field, frappe.as_unicode(self.from_email))
+                #get property from recipient name
+                #find if an existing employee exists under this email
+                #do this only if on issue
+                property_unit,property_manager = get_linked_property(frappe.as_unicode(self.from_email),self.email_account.email_id)
+                parent.set("custom_property_unit",property_unit)
+                parent.set("person_in_charge",property_manager)
+                parent.set("description",frappe.as_unicode(self.content))
+                parent.set("status","erledigt")
+                    
+                        
+            if email_fields.sender_name_field:
+                parent.set(email_fields.sender_name_field, frappe.as_unicode(self.from_real_name))
+
+            parent.flags.ignore_mandatory = True
+            try:
+                parent.insert(ignore_permissions=True)
+                assign_ticket_to_recipient(parent,self.email_account.email_id)
+                
+                return parent.name
+            except frappe.DuplicateEntryError:
+                # try and find matching parent
+                return frappe.db.get_value(doctype, {email_fields.sender_field: self.from_email})
+        except:
+            frappe.log_error("create_documents",frappe.get_traceback())
+
+
+    def _build_communication_doc(self):
+            data = self.as_dict()
+            data["doctype"] = "Communication"
+          
+            
+            if self.parent_communication():
+                data["in_reply_to"] = self.parent_communication().name
+
+            append_to = self.append_to if self.email_account.use_imap else self.email_account.append_to
+
+            # if self.reference_document():
+            # 	data["reference_doctype"] = self.reference_document().doctype
+            # 	data["reference_name"] = self.reference_document().name
+
+            if append_to and append_to != "Communication": #alway use the append _to , pop does not work for 
+                print("ok")
+                reference_name = create_reference_document(append_to)
+                if reference_name:
+                    data["reference_doctype"] = append_to
+                    data["reference_name"] = reference_name
+
+            if self.is_notification():
+                # Disable notifications for notification.
+                data["unread_notification_sent"] = 1
+
+            if self.seen_status:
+                data["_seen"] = json.dumps(self.get_users_linked_to_account(self.email_account))
+
+            communication = frappe.get_doc(data)
+            communication.flags.in_receive = True
+            communication.insert(ignore_permissions=True)
+
+            # Communication might have been modified by some hooks, reload before saving
+            communication.reload()
+
+            # save attachments
+            communication._attachments = self.save_attachments_in_doc(communication)
+            communication.content = sanitize_html(self.replace_inline_images(communication._attachments))
+            communication.save()
+            return communication
+
+
+
 
 def ticket_after_insert(doc,event):
     #update issues table in Property Unit.

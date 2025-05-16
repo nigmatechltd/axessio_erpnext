@@ -26,7 +26,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/axessio_erpnext/css/axessio_erpnext.css"
-# app_include_js = "/assets/axessio_erpnext/js/axessio_erpnext.js"
+app_include_js = "/assets/axessio_erpnext/js/axessio.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/axessio_erpnext/css/axessio_erpnext.css"
