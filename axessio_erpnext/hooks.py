@@ -44,7 +44,9 @@ app_include_js = "/assets/axessio_erpnext/js/axessio.js"
 
 # include js in doctype views
 doctype_js = {
-              "HD Ticket" : "public/js/hd_ticket.js"
+              "HD Ticket" : "public/js/hd_ticket.js",
+              "Issue" : "public/js/issue.js",
+              "Communication" : "public/js/communication.js"
               }
 
 doctype_list_js = {"Issue" : "public/js/issue_list.js",
