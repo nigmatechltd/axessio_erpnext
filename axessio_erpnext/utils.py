@@ -45,7 +45,7 @@ def create_po(dialog_values,doc):
                 "item_code" : item.get("item"),
                 "qty" : item.get("qty"),
                 "rate" : item.get("rate"),
-                "amount" : float(item.get("qty")) * float(item.get("rate")),
+                "amount" : float(item.get("qty",0)) * float(item.get("rate",0)),
                 "parentfield": "items",
                 "item_name" : frappe.db.get_value("Item",item.get("item"),"item_name"),
                 "uom" : frappe.db.get_value("Item",item.get("item"),"stock_uom"),
