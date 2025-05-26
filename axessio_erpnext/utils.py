@@ -58,7 +58,7 @@ def create_po(dialog_values,doc):
     po = frappe.get_doc({
         "doctype" : "Purchase Order",
         "supplier" : dialog_values.get("supplier"),
-        "custom_ticket" : doc.get("name"),
+        "custom_issue" : doc.get("name"),
         "custom_subject" : doc.get("subject"),
         "custom_priority" : doc.get("priority"),
         "custom_rental_unit" : doc.get("property_name"),
