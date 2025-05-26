@@ -74,12 +74,73 @@ def create_po(dialog_values,doc):
     po.flags.ignore_mandatory = True
     po.insert()
     
-    issuse_doc = frappe.get_doc
     app_url = frappe.utils.get_url_to_form("Purchase Order", po.name)
     hyperlink = '<a href="{url}" target="_blank">{name}</a>'.format(
         url=app_url, name=po.name
     )
     comment = "Purchase order created {hyperlink}".format(hyperlink=hyperlink)
+    
+    comment_doc = frappe.get_doc({
+        "doctype" : "Comment",
+        "reference_doctype" : "Issue",
+        "reference_name" : doc.get("name"),
+        "comment_by" : frappe.session.user_fullname,
+        "content" : _(comment),
+        "comment_email":frappe.session.user,
+        "comment_type" : "Comment"
+    })
+    comment_doc.save()
+    frappe.db.commit()
+    
+
+@frappe.whitelist()
+def create_mv(dialog_values,doc):
+    
+    if isinstance(dialog_values,str):
+        dialog_values = json.loads(dialog_values)
+    
+    if isinstance(doc,str):
+        doc = json.loads(doc)
+    
+    
+    if dialog_values.get("maintenance_visit_item"):
+        mv_items = []
+        for item in dialog_values.get("maintenance_visit_item"):
+            
+            mv_item = frappe.get_doc({
+                "doctype" : "Maintenance Visit Purpose",
+                "item_code" : item.get("item"),
+                "item_name" : frappe.db.get_value("Item",item.get("item"),"item_name"),
+                "description" : item.get("description"),
+                "parentfield" : "purposes",
+                "parenttype" : "Maintenance Visit"
+                
+            })
+            mv_items.append(mv_item)
+            
+            
+    m_visit = frappe.get_doc({
+            "doctype" : "Maintenance Visit",
+            "customer" : dialog_values.get("customer"),
+            "custom_type_of_work_order" : dialog_values.get("type_of_order"),
+            "mntc_date" : dialog_values.get("date"),
+            "custom_property_unit" : doc.get("property_name"),
+            "custom_issue" : doc.get("name"),
+            "custom_issue_description" : doc.get("description"),
+            "custom_axessio_contact_person" : dialog_values.get("axessio_contact_person"),
+            "custom_employee" : dialog_values.get("employee"),
+            "purposes"  : mv_items
+            
+        })
+    m_visit.flags.ignore_validate=True
+    m_visit.flags.ignore_mandatory = True
+    m_visit.insert()
+    
+    app_url = frappe.utils.get_url_to_form("Maintenance Visit", m_visit.name)
+    hyperlink = '<a href="{url}" target="_blank">{name}</a>'.format(
+        url=app_url, name=m_visit.name
+    )
+    comment = "Maintenance Visit created {hyperlink}".format(hyperlink=hyperlink)
     
     comment_doc = frappe.get_doc({
         "doctype" : "Comment",
