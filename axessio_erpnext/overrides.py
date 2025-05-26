@@ -51,46 +51,46 @@ class CustomInboundMail(InboundMail):
             frappe.log_error("create_documents",frappe.get_traceback())
 
 
-    def _build_communication_doc(self):
-            data = self.as_dict()
-            data["doctype"] = "Communication"
+    # def _build_communication_doc(self):
+    #         data = self.as_dict()
+    #         data["doctype"] = "Communication"
           
             
-            if self.parent_communication():
-                data["in_reply_to"] = self.parent_communication().name
+    #         if self.parent_communication():
+    #             data["in_reply_to"] = self.parent_communication().name
 
-            append_to = self.append_to if self.email_account.use_imap else self.email_account.append_to
+    #         append_to = self.append_to if self.email_account.use_imap else self.email_account.append_to
 
-            # if self.reference_document():
-            # 	data["reference_doctype"] = self.reference_document().doctype
-            # 	data["reference_name"] = self.reference_document().name
+    #         # if self.reference_document():
+    #         # 	data["reference_doctype"] = self.reference_document().doctype
+    #         # 	data["reference_name"] = self.reference_document().name
 
-            if append_to and append_to != "Communication": #alway use the append _to , pop does not work for 
-                print("ok")
-                reference_name = create_reference_document(append_to)
-                if reference_name:
-                    data["reference_doctype"] = append_to
-                    data["reference_name"] = reference_name
+    #         if append_to and append_to != "Communication": #alway use the append _to , pop does not work for 
+    #             print("ok")
+    #             reference_name = create_reference_document(append_to)
+    #             if reference_name:
+    #                 data["reference_doctype"] = append_to
+    #                 data["reference_name"] = reference_name
 
-            if self.is_notification():
-                # Disable notifications for notification.
-                data["unread_notification_sent"] = 1
+    #         if self.is_notification():
+    #             # Disable notifications for notification.
+    #             data["unread_notification_sent"] = 1
 
-            if self.seen_status:
-                data["_seen"] = json.dumps(self.get_users_linked_to_account(self.email_account))
+    #         if self.seen_status:
+    #             data["_seen"] = json.dumps(self.get_users_linked_to_account(self.email_account))
 
-            communication = frappe.get_doc(data)
-            communication.flags.in_receive = True
-            communication.insert(ignore_permissions=True)
+    #         communication = frappe.get_doc(data)
+    #         communication.flags.in_receive = True
+    #         communication.insert(ignore_permissions=True)
 
-            # Communication might have been modified by some hooks, reload before saving
-            communication.reload()
+    #         # Communication might have been modified by some hooks, reload before saving
+    #         communication.reload()
 
-            # save attachments
-            communication._attachments = self.save_attachments_in_doc(communication)
-            communication.content = sanitize_html(self.replace_inline_images(communication._attachments))
-            communication.save()
-            return communication
+    #         # save attachments
+    #         communication._attachments = self.save_attachments_in_doc(communication)
+    #         communication.content = sanitize_html(self.replace_inline_images(communication._attachments))
+    #         communication.save()
+    #         return communication
 
 
 
