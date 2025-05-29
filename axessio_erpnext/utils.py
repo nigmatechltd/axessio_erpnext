@@ -102,9 +102,9 @@ def create_mv(dialog_values,doc):
     if isinstance(doc,str):
         doc = json.loads(doc)
     
-    
+    mv_items = []
     if dialog_values.get("maintenance_visit_item"):
-        mv_items = []
+        
         for item in dialog_values.get("maintenance_visit_item"):
             
             mv_item = frappe.get_doc({
