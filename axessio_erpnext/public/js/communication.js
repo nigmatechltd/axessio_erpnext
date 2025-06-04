@@ -113,6 +113,31 @@ frappe.ui.form.on("Communication",{
 					options: "Issue",
 					label: __("Issue"),
 					fieldname: "reference_name",
+					onchange : function(){
+						let issue_name = d.get_value('reference_name');
+						if (issue_name) {
+							frappe.call({
+								method: 'frappe.client.get_value',
+								args: {
+									doctype: 'Issue',
+									filters: { name: issue_name },
+									fieldname: ['property_name']
+								},
+								callback: function(response) {
+									d.set_value('property_unit', response.message.property_name);
+								}
+							});
+						}
+					}
+					
+				},
+				{
+					fieldtype: "Data",
+					
+					label: __("Property Unit"),
+					fieldname: "property_unit",
+					fetch_from : 'reference_name.company',
+					read_only : 1
 				},
 			],
 		});

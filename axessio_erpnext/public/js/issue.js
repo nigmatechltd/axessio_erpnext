@@ -168,12 +168,15 @@ frappe.ui.form.on("Issue",{
 					options: "Customer",
 					label: __("Customer"),
 					fieldname: "customer",
+					default : frm.doc.customer
 				},
                 {
 					fieldtype: "Link",
 					options: "Employee",
 					label: __("Axessio Contact Person"),
 					fieldname: "axessio_contact_person",
+					default : frm.doc.person_in_charge
+
 				},
                 {
 					fieldtype: "Link",
