@@ -46,13 +46,6 @@ frappe.ui.form.on("Issue",{
 			title: __("Create Purchase Order"),
 			fields: [
 				{
-					fieldtype: "Select",
-					label: __("Type of Order"),
-					fieldname: "type_of_order",
-                    options : ["","Internal","External",]
-					
-				},
-				{
 					fieldtype: "Link",
 					options: "Supplier",
 					label: __("Supplier"),
@@ -149,13 +142,7 @@ frappe.ui.form.on("Issue",{
 		var d = new frappe.ui.Dialog({
 			title: __("Create Maintenance Visit"),
 			fields: [
-				{
-					fieldtype: "Select",
-					label: __("Type of Order"),
-					fieldname: "type_of_order",
-                    options : ["","Internal","External",]
-					
-				},
+				
                 {
 					fieldtype: "Select",
 					label: __("Maintenance Type"),
