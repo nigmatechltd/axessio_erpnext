@@ -46,7 +46,8 @@ app_include_js = "/assets/axessio_erpnext/js/axessio.js"
 doctype_js = {
               "HD Ticket" : "public/js/hd_ticket.js",
               "Issue" : "public/js/issue.js",
-              "Communication" : "public/js/communication.js"
+              "Communication" : "public/js/communication.js",
+              "Purchase Order" : "public/js/po.js"
               }
 
 doctype_list_js = {"Issue" : "public/js/issue_list.js",

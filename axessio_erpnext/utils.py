@@ -66,7 +66,7 @@ def create_po(dialog_values,doc):
         "custom_ticket_customer" : doc.get("customer"),
         "custom_axessio_contact_person" : doc.get("person_in_charge"),
         "custom_description" : doc.get("description"),
-        "custom_type_of_order" :  dialog_values.get("type_of_order"),
+        "custom_type_of_order" : "External", #dialog_values.get("type_of_order"),
         "schedule_date" : dialog_values.get("required_by"),
         "items":purchase_items
     })
@@ -122,7 +122,7 @@ def create_mv(dialog_values,doc):
     m_visit = frappe.get_doc({
             "doctype" : "Maintenance Visit",
             "customer" : dialog_values.get("customer"),
-            "custom_type_of_work_order" : dialog_values.get("type_of_order"),
+            "custom_type_of_work_order" : "Internal", #dialog_values.get("type_of_order"),
             "mntc_date" : dialog_values.get("date"),
             "custom_property_unit" : doc.get("property_name"),
             "custom_issue" : doc.get("name"),
@@ -153,3 +153,10 @@ def create_mv(dialog_values,doc):
     })
     comment_doc.save()
     frappe.db.commit()
+    
+
+@frappe.whitelist()
+def get_company_default_billing_address(company):
+    
+    company = frappe.db.get_value("Dynamic Link",{"link_doctype":"Company","link_name":company},"parent")
+    return company

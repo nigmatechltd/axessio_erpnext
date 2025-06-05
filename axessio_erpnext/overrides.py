@@ -175,6 +175,13 @@ def add_options_to_issue_type():
     issue_status.options = issue_status_options
     frappe.db.delete("Property Setter", "Issue-status-options")
     issue_status.save()
+    
+    #set completion field in Maintenance Visit to unmandatory
+    completion_status =  frappe.get_meta("Maintenance Visit").get_field("completion_status")
+    completion_status.reqd = 0
+    completion_status.save()
+    #set completion field in Maintenance Visit to unmandatory
+    
     frappe.db.commit()
     
 

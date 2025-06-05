@@ -6,7 +6,13 @@ frappe.ui.form.on("Communication",{
         cur_frm.remove_custom_button("Relink")
         cur_frm.remove_custom_button("Contact","Create")
 		cur_frm.remove_custom_button("Lead","Create")
+		cur_frm.remove_custom_button("Reopen")
+		cur_frm.remove_custom_button("Close")
+
+
 		cur_frm.remove_custom_button("Opportunity","Create")
+		cur_frm.remove_custom_button("Issue","Create")
+
 
         cur_frm.add_custom_button(__("Create Issue"), function(){
             frm.trigger("show_create_issue_dialog")
@@ -107,38 +113,48 @@ frappe.ui.form.on("Communication",{
 		var d = new frappe.ui.Dialog({
 			title: __("Link Communication to Existing Issue"),
 			fields: [
+				{
+					fieldtype: "Link",
+					label: __("Property Unit"),
+					fieldname: "property_unit",
+					options : "Property",
+					fetch_from : 'reference_name.company',
+					read_only :0
+				},
 				
 				{
 					fieldtype: "Link",
 					options: "Issue",
 					label: __("Issue"),
 					fieldname: "reference_name",
-					onchange : function(){
-						let issue_name = d.get_value('reference_name');
-						if (issue_name) {
-							frappe.call({
-								method: 'frappe.client.get_value',
-								args: {
-									doctype: 'Issue',
-									filters: { name: issue_name },
-									fieldname: ['property_name']
-								},
-								callback: function(response) {
-									d.set_value('property_unit', response.message.property_name);
-								}
-							});
-						}
-					}
+					get_query: function () {
+						return {
+							filters: {
+								property_name: d.get_value('property_unit'),
+								status :  "nicht begonnen"
+								
+							},
+						};
+					},
+					// onchange : function(){
+					// 	let issue_name = d.get_value('reference_name');
+					// 	if (issue_name) {
+					// 		frappe.call({
+					// 			method: 'frappe.client.get_value',
+					// 			args: {
+					// 				doctype: 'Issue',
+					// 				filters: { name: issue_name },
+					// 				fieldname: ['name1']
+					// 			},
+					// 			callback: function(response) {
+					// 				d.set_value('property_unit', response.message.property_name);
+					// 			}
+					// 		});
+					// 	}
+					// }
 					
 				},
-				{
-					fieldtype: "Data",
-					
-					label: __("Property Unit"),
-					fieldname: "property_unit",
-					fetch_from : 'reference_name.company',
-					read_only : 1
-				},
+				
 			],
 		});
 		
