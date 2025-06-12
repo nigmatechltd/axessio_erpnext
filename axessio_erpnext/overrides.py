@@ -155,7 +155,8 @@ def get_linked_property(sender_email,recipient_email):
 
 def run_after_migrate():
     add_options_to_issue_type()
-    add_options_to_hd_ticket()
+    #add_options_to_hd_ticket()
+    add_docperm_to_comm()
 
 
 def add_options_to_issue_type():
@@ -239,4 +240,34 @@ def get_lease_details(lease):
             lease_data.update({"mobile_no":mobile_no,"email_id":email_id})
         
         return lease_data
-       
+
+
+
+@frappe.whitelist()
+def add_docperm_to_comm():
+    #add docperm to communications
+
+    comm_perm = frappe.get_doc({
+        "doctype": "DocPerm",
+        "parent": "Communication",
+        "role": "Employee",
+        "if_owner": 0,
+        "permlevel": 0,
+        "select": 0,
+        "read": 1,
+        "write": 1,
+        "create": 1,
+        "delete": 1,
+        "submit": 0,
+        "cancel": 0,
+        "amend": 0,
+        "report": 1,
+        "export": 1,
+        "import": 0,
+        "share": 1,
+        "print": 1,
+        "email": 1,
+        "parentfield": "permissions",
+        "parenttype": "DocType"
+    })
+    comm_perm.insert(ignore_permissions=True)
