@@ -246,7 +246,8 @@ def get_lease_details(lease):
 @frappe.whitelist()
 def add_docperm_to_comm():
     #add docperm to communications
-    if not frappe.db.exists("DocPerm",{"parent": "Communication","role": "Employee","parentfield": "permissions"}):
+    if frappe.db.exists("DocPerm",{"parent": "Communication","role": "Employee","parentfield": "permissions"}):
+        return
         comm_perm = frappe.get_doc({
             "doctype": "DocPerm",
             "parent": "Communication",

@@ -78,7 +78,7 @@ def create_po(dialog_values,doc):
     hyperlink = '<a href="{url}" target="_blank">{name}</a>'.format(
         url=app_url, name=po.name
     )
-    comment = "Purchase order created {hyperlink}".format(hyperlink=hyperlink)
+    comment = "Bestellung erzeugt {hyperlink}".format(hyperlink=hyperlink)
     
     comment_doc = frappe.get_doc({
         "doctype" : "Comment",

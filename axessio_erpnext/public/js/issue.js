@@ -78,7 +78,7 @@ frappe.ui.form.on("Issue",{
 			var values = d.get_values();
 			if (values) {
 				frappe.confirm(
-					__("Are you sure you want to create an purchase order from this issue?",),
+					__("Wollen Sie wirklich eine Bestellung anlegen?"),
 					function () {
 						d.hide();
 						frappe.call({
@@ -179,7 +179,7 @@ frappe.ui.form.on("Issue",{
 				},
                 {
 					fieldtype: "Table",
-					label: __("Maintenance Visit Item"),
+					label: __("Wartungsbesuch"),
 					fieldname: "maintenance_visit_item",
                     in_place_edit : true,
                     cannot_add_rows : false,
@@ -196,7 +196,7 @@ frappe.ui.form.on("Issue",{
 			var values = d.get_values();
 			if (values) {
 				frappe.confirm(
-					__("Are you sure you want to create an maintenance visit from this issue?",),
+					__("Wollen Sie wirklich einen Wartungsbesuch für diesen Vorgang erstellen?",),
 					function () {
 						d.hide();
 						frappe.call({
@@ -209,7 +209,7 @@ frappe.ui.form.on("Issue",{
                             freeze:true,
 							callback: function () {
                                 frappe.show_alert({
-                                    message: __("Maintenance Visit Created"),
+                                    message: __("Wartungsbesuch angelegt"),
                                     indicator: "info",
                                 });
                                 cur_frm.reload_doc()
