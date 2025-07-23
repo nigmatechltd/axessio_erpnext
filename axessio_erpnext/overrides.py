@@ -205,13 +205,13 @@ def add_options_to_hd_ticket():
     frappe.db.commit()
     
 
-class CustomHDTicket(HDTicket):
+# class CustomHDTicket(HDTicket):
     
       
    
-   def validate(self):      
-        if self.is_new():
-            self.name = make_autoname("TI.YY.MM.DD.-.#####")
+#    def validate(self):      
+#         if self.is_new():
+#             self.name = make_autoname("TI.YY.MM.DD.-.#####")
         
 
 
