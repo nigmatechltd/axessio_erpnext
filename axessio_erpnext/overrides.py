@@ -1,6 +1,5 @@
 import frappe
 from frappe.model.naming import make_autoname
-from helpdesk.helpdesk.doctype.hd_ticket.hd_ticket import HDTicket
 from frappe.desk.form.assign_to import add
 import json
 from frappe.email.receive import InboundMail
