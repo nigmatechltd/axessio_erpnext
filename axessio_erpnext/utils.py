@@ -126,7 +126,7 @@ def create_mv(dialog_values,doc):
             "mntc_date" : dialog_values.get("date"),
             "custom_property_unit" : doc.get("property_name"),
             "custom_issue" : doc.get("name"),
-            "custom_issue_description" : doc.get("description"),
+            "custom_issue_description" : remove_html_tags(doc.get("description")),
             "custom_axessio_contact_person" : dialog_values.get("axessio_contact_person"),
             "custom_employee" : dialog_values.get("employee"),
             "purposes"  : mv_items
@@ -153,7 +153,11 @@ def create_mv(dialog_values,doc):
     })
     comment_doc.save()
     frappe.db.commit()
-    
+
+def remove_html_tags(text):
+	import re
+	clean = re.compile('<.*?>')
+	return re.sub(clean, '', text)  
 
 @frappe.whitelist()
 def get_company_default_billing_address(company):
