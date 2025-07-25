@@ -129,7 +129,8 @@ def create_mv(dialog_values,doc):
             "custom_issue_description" : remove_html_tags(doc.get("description")),
             "custom_axessio_contact_person" : dialog_values.get("axessio_contact_person"),
             "custom_employee" : dialog_values.get("employee"),
-            "purposes"  : mv_items
+            "purposes"  : mv_items,
+            "custom_lease" : doc.get("custom_lease")
             
         })
     m_visit.flags.ignore_validate=True
