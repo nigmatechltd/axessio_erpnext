@@ -1,3 +1,4 @@
+from erpnext.maintenance.doctype.maintenance_visit.maintenance_visit import MaintenanceVisit
 import frappe
 from frappe.model.naming import make_autoname
 from frappe.desk.form.assign_to import add
@@ -276,3 +277,9 @@ def add_docperm_to_comm():
     #delete Permission
     if frappe.db.exists("DocPerm",{"parent": "Communication","role": "All","parentfield": "permissions",}):
         frappe.db.delete("DocPerm",{"parent": "Communication","role": "All","parentfield": "permissions",})
+
+
+class CustomMaintenanceVisit(MaintenanceVisit):
+    
+    def validate_purpose_table(self):
+         return
