@@ -165,7 +165,7 @@ def add_options_to_issue_type():
     issue_status_options = issue_status.options
     
     issue_status_options = [] #issue_status_options.split("\n")
-    new_options = ["nicht begonnen","beauftragt","erledigt","angefangen","wiederkehrend"]
+    new_options = ["nicht begonnen","beauftragt","erledigt","angefangen","wiederkehrend", "zurückgestellt"]
     for status in new_options:
         if status not in issue_status_options:
             issue_status_options.append(status)
@@ -173,6 +173,7 @@ def add_options_to_issue_type():
     issue_status_options = "\n".join(issue_status_options)
         
     issue_status.options = issue_status_options
+    issue_status.default = "nicht begonnen"
     frappe.db.delete("Property Setter", "Issue-status-options")
     issue_status.save()
     

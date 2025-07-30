@@ -91,6 +91,7 @@ def create_po(dialog_values,doc):
     })
     comment_doc.save()
     frappe.db.commit()
+    return po.name
     
 
 @frappe.whitelist()
@@ -122,13 +123,14 @@ def create_mv(dialog_values,doc):
     m_visit = frappe.get_doc({
             "doctype" : "Maintenance Visit",
             "customer" : dialog_values.get("customer"),
+            "company" : dialog_values.get("company"),
             "custom_type_of_work_order" : "Internal", #dialog_values.get("type_of_order"),
             "mntc_date" : dialog_values.get("date"),
             "custom_property_unit" : doc.get("property_name"),
             "custom_issue" : doc.get("name"),
             "custom_issue_description" : doc.get("description"),
-            "custom_axessio_contact_person" : dialog_values.get("axessio_contact_person"),
-            "custom_employee" : dialog_values.get("employee"),
+            "custom_axessio_contact_person" : dialog_values.get("contact_person"),
+            "custom_employee" : dialog_values.get("property_manager"),
             "purposes"  : mv_items
             
         })
@@ -153,7 +155,8 @@ def create_mv(dialog_values,doc):
     })
     comment_doc.save()
     frappe.db.commit()
-    
+    return m_visit.name
+
 
 @frappe.whitelist()
 def get_company_default_billing_address(company):

@@ -19,6 +19,13 @@ frappe.ui.form.on("Issue",{
               label: __("Item"),
               options : "Item"
             },
+			{
+				fieldname: "uom",
+				fieldtype: "Link",
+				in_list_view: 1,
+				label: __("UOM"),
+				options: "UOM"
+			},
             {
                 fieldname: "qty",
                 fieldtype: "Float",
@@ -33,13 +40,6 @@ frappe.ui.form.on("Issue",{
                
                 
             },
-            // {
-            //     fieldname: "total",
-            //     fieldtype: "Currency",
-            //     in_list_view: 1,
-            //     label: __("Total"),
-
-            // },
           ];
         this.data = [];
 		var d = new frappe.ui.Dialog({
@@ -88,12 +88,14 @@ frappe.ui.form.on("Issue",{
 								"dialog_values" : values
                                 
 							},
-							callback: function () {
+							callback: function (r) {
                                 frappe.show_alert({
                                     message: __("Purchase Order Created"),
                                     indicator: "info",
                                 });
-                                cur_frm.reload_doc()
+								if (r.message) {
+									frappe.set_route('Form', 'Purchase Order', r.message);
+								}
 								// cur_frm.refresh();
                                 // cur_frm.refresh_fields()
 
@@ -110,6 +112,19 @@ frappe.ui.form.on("Issue",{
 				);
 			}
 		});
+
+		if (frappe.db.get_doc("Item", "auf Nachweis")) {
+			frappe.db.get_doc("Item", "auf Nachweis").then(item => {
+				this.data.push({
+					item: item.name,
+					uom: item.stock_uom,
+					qty: 1,
+					rate: item.valuation_rate,
+				});
+				d.refresh_field("purchase_order_item");
+			})
+		}
+
 		d.show();
 	},
     create_maintenance_visit: function (frm) {
@@ -157,19 +172,27 @@ frappe.ui.form.on("Issue",{
 					fieldname: "customer",
 					default : frm.doc.customer
 				},
+				{
+					fieldtype: "Link",
+					options: "Company",
+					label: __("Company"),
+					fieldname: "company",
+					default : frm.doc.custom_property_company
+				},
                 {
 					fieldtype: "Link",
 					options: "Employee",
-					label: __("Axessio Contact Person"),
-					fieldname: "axessio_contact_person",
+					label: __("Contact Person"),
+					fieldname: "contact_person",
 					default : frm.doc.person_in_charge
 
 				},
                 {
 					fieldtype: "Link",
-					options: "Employee",
-					label: __("Employee"),
-					fieldname: "employee",
+					options: "User",
+					label: __("Property Manager"),
+					fieldname: "property_manager",
+					default : frappe.session.user
 				},
                 {
 					fieldtype: "Date",
@@ -207,12 +230,14 @@ frappe.ui.form.on("Issue",{
                                 
 							},
                             freeze:true,
-							callback: function () {
+							callback: function (r) {
                                 frappe.show_alert({
                                     message: __("Wartungsbesuch angelegt"),
                                     indicator: "info",
                                 });
-                                cur_frm.reload_doc()
+								if (r.message) {
+									frappe.set_route('Form', 'Maintenance Visit', r.message);
+								}
 								// cur_frm.refresh();
                                 // cur_frm.refresh_fields()
 
@@ -229,6 +254,15 @@ frappe.ui.form.on("Issue",{
 				);
 			}
 		});
+
+		// if (frm.doc.property_name) {
+		// 		frappe.db.get_doc("Property", frm.doc.property_name).then(property => {
+		// 			if (property.company) {
+		// 				d.set_value("company", property.company);
+		// 			}
+		// 		});
+		// 	}
+
 		d.show();
 	},
 
