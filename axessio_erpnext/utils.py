@@ -132,7 +132,9 @@ def create_mv(dialog_values,doc):
             "custom_axessio_contact_person" : dialog_values.get("axessio_contact_person"),
             "custom_employee" : dialog_values.get("employee"),
             "purposes"  : mv_items,
-            "custom_lease" : doc.get("custom_lease")
+            "custom_lease" : doc.get("custom_lease"),
+            "custom_property_manager" : frappe.session.user,
+            "contact_person" : frappe.db.get_value("Property",doc.get("property_unit"),"custom_building_superintendent") or ""
             
         })
     m_visit.flags.ignore_validate=True
