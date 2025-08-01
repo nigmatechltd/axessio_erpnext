@@ -285,12 +285,7 @@ def add_docperm_to_comm():
 #   \  /
 #    \/
 
-WHERE_TO_SEND = {"MAIL_SETTINGS":"GoLive Settings",
-                 "SALES":{"doctype": "Sales Order", 
-                       "person": "Customer", 
-                       "checkbox": "send_sales_order_notification", 
-                       "subject": "sales_order_email_subject", 
-                       "message": "sales_order_email_template"}, 
+WHERE_TO_SEND = {"MAIL_SETTINGS":"Axessio Settings", 
                  "PURCHASE":{"doctype": "Purchase Order", 
                        "person": "Supplier", 
                        "checkbox": "send_purchase_order_notification", 
@@ -403,17 +398,7 @@ def _send_email(doc, recipients, subject, message):
 
 def send_email_notification(doc, event):
     try:
-        if doc.doctype == SEND_TO.SALES["doctype"]:
-            contact_email = _get_email_address(doc, SEND_TO.SALES["person"])
-            if not contact_email:
-                return
-            email_subject = _get_jinja(doc, SEND_TO.MAIL_SETTINGS, SEND_TO.SALES["subject"], SEND_TO.SALES["checkbox"])
-            email_message = _get_jinja(doc, SEND_TO.MAIL_SETTINGS, SEND_TO.SALES["message"], SEND_TO.SALES["checkbox"])
-            if not email_subject or not email_message:
-                return
-            _send_email(doc, [contact_email], email_subject, email_message)
-
-        elif doc.doctype == SEND_TO.PURCHASE["doctype"]:
+        if doc.doctype == SEND_TO.PURCHASE["doctype"]:
             contact_email = _get_email_address(doc, SEND_TO.PURCHASE["person"])
             if not contact_email:
                 return
