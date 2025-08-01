@@ -64,7 +64,7 @@ frappe.ui.form.on("Communication",{
 				},
                 {
 					fieldtype: "Select",
-					options: [" ","nicht begonnen","beauftragt","erledigt","angefangen","wiederkehrend"],
+					options: [" ","nicht begonnen","beauftragt","erledigt","angefangen","wiederkehrend","zurückgestellt"],
 					label: __("Status"),
 					fieldname: "status",
                     reqd : 1
