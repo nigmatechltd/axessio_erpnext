@@ -9,16 +9,16 @@ frappe.ui.form.on("Issue",{
             frm.trigger("create_maintenance_visit")
         },"Issue Actions")
     },
-    create_purchase_order: function (frm) {
 
-        const table_fields = [
-            {
-              fieldname: "item",
-              fieldtype: "Link",
-              in_list_view: 1,
-              label: __("Item"),
-              options : "Item"
-            },
+	create_purchase_order: function (frm) {
+		const table_fields = [
+			{
+				fieldname: "item",
+				fieldtype: "Link",
+				in_list_view: 1,
+				label: __("Item"),
+				options: "Item"
+			},
 			{
 				fieldname: "uom",
 				fieldtype: "Link",
@@ -26,106 +26,95 @@ frappe.ui.form.on("Issue",{
 				label: __("UOM"),
 				options: "UOM"
 			},
-            {
-                fieldname: "qty",
-                fieldtype: "Float",
-                in_list_view: 1,
-                label: __("Quantity"),
-            },
-            {
-                fieldname: "rate",
-                fieldtype: "Currency",
-                in_list_view: 1,
-                label: __("Rate"),
-               
-                
-            },
-          ];
-        this.data = [];
-		var d = new frappe.ui.Dialog({
-			title: __("Create Purchase Order"),
-			fields: [
-				{
-					fieldtype: "Link",
-					options: "Supplier",
-					label: __("Supplier"),
-					fieldname: "supplier",
-                    default : frm.doc.sub_contractor_contact
-				},
-                {
-					fieldtype: "Date",
-					
-					label: __("Required By"),
-					fieldname: "required_by",
-                    default : "Today"
-				},
-                {
-					fieldtype: "Table",
-					label: __("Purchase Order Item"),
-					fieldname: "purchase_order_item",
-                    in_place_edit : true,
-                    cannot_add_rows : false,
-                    fields : table_fields,
-                    get_data: () => {
-                        return this.data;
-                    },
-                    
-				},
-              
-			],
-		});
-		d.set_primary_action(__("Create Purchase Order"), function () {
-			var values = d.get_values();
-			if (values) {
-				frappe.confirm(
-					__("Wollen Sie wirklich eine Bestellung anlegen?"),
-					function () {
-						d.hide();
-						frappe.call({
-							method: "axessio_erpnext.utils.create_po",
-							args: {
-								"doc": frm.doc,
-								"dialog_values" : values
-                                
-							},
-							callback: function (r) {
-                                frappe.show_alert({
-                                    message: __("Purchase Order Created"),
-                                    indicator: "info",
-                                });
-								if (r.message) {
-									frappe.set_route('Form', 'Purchase Order', r.message);
-								}
-								// cur_frm.refresh();
-                                // cur_frm.refresh_fields()
+			{
+				fieldname: "qty",
+				fieldtype: "Float",
+				in_list_view: 1,
+				label: __("Quantity"),
+			},
+			{
+				fieldname: "rate",
+				fieldtype: "Currency",
+				in_list_view: 1,
+				label: __("Rate"),
+			},
+		];
 
-							},
-						});
+		this.data = [];
+
+		frappe.db.get_doc("Item", "auf Nachweis").then(item => {
+			this.data.push({
+				item: item.name,
+				uom: item.stock_uom,
+				qty: 1,
+				rate: item.valuation_rate,
+			});
+
+			let d = new frappe.ui.Dialog({
+				title: __("Create Purchase Order"),
+				fields: [
+					{
+						fieldtype: "Link",
+						options: "Supplier",
+						label: __("Supplier"),
+						fieldname: "supplier",
+						default: frm.doc.sub_contractor_contact
 					},
-					function () {
-						frappe.show_alert({
-							message: __("Purchase Order not Created"),
-							indicator: "info",
-						});
-                        d.hide()
+					{
+						fieldtype: "Date",
+						label: __("Required By"),
+						fieldname: "required_by",
+						default: "Today"
+					},
+					{
+						fieldtype: "Table",
+						label: __("Purchase Order Item"),
+						fieldname: "purchase_order_item",
+						in_place_edit: true,
+						cannot_add_rows: false,
+						fields: table_fields,
+						get_data: () => this.data
+					},
+				],
+				primary_action_label: __("Create Purchase Order"),
+				primary_action(values) {
+					if (values) {
+						frappe.confirm(
+							__("Wollen Sie wirklich eine Bestellung anlegen?"),
+							function () {
+								d.hide();
+								frappe.call({
+									method: "axessio_erpnext.utils.create_po",
+									args: {
+										"doc": frm.doc,
+										"dialog_values": values
+									},
+									callback: function (r) {
+										frappe.show_alert({
+											message: __("Purchase Order Created"),
+											indicator: "info",
+										});
+										if (r.message) {
+											frappe.set_route('Form', 'Purchase Order', r.message);
+										}
+									}
+								});
+							},
+							function () {
+								frappe.show_alert({
+									message: __("Purchase Order not Created"),
+									indicator: "info",
+								});
+								d.hide();
+							}
+						);
 					}
-				);
-			}
+				}
+			});
+
+			d.show();
+			d.refresh_field("purchase_order_item");
 		});
-
-		if (frappe.db.get_doc("Item", "auf Nachweis")) {
-			frappe.db.get_doc("Item", "auf Nachweis").then(item => {
-				this.data.push({
-					item: item.name,
-					uom: item.stock_uom,
-					qty: 1,
-					rate: item.valuation_rate,
-				});
-				d.refresh_field("purchase_order_item");
-			})
-		}
-
-		d.show();
 	},
     create_maintenance_visit: function (frm) {
 
