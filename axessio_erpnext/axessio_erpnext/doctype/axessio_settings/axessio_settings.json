@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-01 09:37:12.932114",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "purchase_order_section",
+  "send_purchase_order_notification",
+  "purchase_order_email_subject",
+  "purchase_order_email_template"
+ ],
+ "fields": [
+  {
+   "fieldname": "purchase_order_section",
+   "fieldtype": "Section Break",
+   "label": "Purchase Order"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_purchase_order_notification",
+   "fieldtype": "Check",
+   "label": "Send Purchase Order Notification"
+  },
+  {
+   "fieldname": "purchase_order_email_subject",
+   "fieldtype": "Data",
+   "label": "Purchase Order Email Subject"
+  },
+  {
+   "fieldname": "purchase_order_email_template",
+   "fieldtype": "Small Text",
+   "label": "Purchase Order Email Template"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-08-01 09:43:34.285719",
+ "modified_by": "Administrator",
+ "module": "Axessio Erpnext",
+ "name": "Axessio Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

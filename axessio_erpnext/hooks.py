@@ -156,7 +156,10 @@ doc_events = {
 	# }
     "HD Ticket" : {
         "after_insert" : "axessio_erpnext.overrides.ticket_after_insert"
-    }
+    },
+	"Purchase Order": {
+		"on_submit": "axessio_erpnext.overrides.send_email_notification"
+	},
 }
 
 # Scheduled Tasks

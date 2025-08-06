@@ -3,6 +3,8 @@ import frappe
 from frappe.model.naming import make_autoname
 from frappe.desk.form.assign_to import add
 import json
+import re
+from types import SimpleNamespace
 from frappe.email.receive import InboundMail
 
 
@@ -279,7 +281,156 @@ def add_docperm_to_comm():
         frappe.db.delete("DocPerm",{"parent": "Communication","role": "All","parentfield": "permissions",})
 
 
+# ===> Functions to controle send email notification for Sales Order an Purchase Order <===
+#    ||
+#    ||
+#   \  /
+#    \/
+
+WHERE_TO_SEND = {"MAIL_SETTINGS":"Axessio Settings", 
+                 "PURCHASE":{"doctype": "Purchase Order", 
+                       "person": "Supplier", 
+                       "checkbox": "send_purchase_order_notification", 
+                       "subject": "purchase_order_email_subject", 
+                       "message": "purchase_order_email_template"}}
+
+SEND_TO = SimpleNamespace(**WHERE_TO_SEND)
+
+def _is_valid_email(email):
+    """Check if the provided email is valid with a simple regex validation."""
+    return re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email) is not None
+
+def _get_email_address(doc, name):
+    """Get the email address for a given doctype and name."""
+    email_to = frappe.db.get_value(name, getattr(doc, name.lower()), "email_id")
+    if not email_to or not _is_valid_email(email_to):
+        if not email_to:
+            frappe.log_error(
+                title="Email Address Not Found",
+                message=f"Email address for {name} '{getattr(doc, name.lower())}' is not set.",
+                reference_doctype=doc.doctype,
+                reference_name=doc.name
+            )
+        else:
+            frappe.log_error(
+                title="Invalid Email Address",
+                message=f"Email address for {name} '{getattr(doc, name.lower())}' is invalid: '{email_to}'",
+                reference_doctype=doc.doctype,
+                reference_name=doc.name
+            )
+        return
+    return email_to
+
+def _get_jinja(doc, doctype_settings, template_name, checkbox):
+    """Get the email template for a given doctype."""
+    if not frappe.db.get_single_value(doctype_settings, checkbox):
+        frappe.log_error(
+            title=f"{doctype_settings} Notification Disabled",
+            message=f"Email notification for {checkbox} is disabled"
+            f" in {doctype_settings}.\n\n"
+            f"{checkbox} is set to {frappe.db.get_single_value(doctype_settings, checkbox)}",
+            reference_doctype=doc.doctype,
+            reference_name=doc.name
+        )
+        return
+    raw_email_template = frappe.db.get_single_value(doctype_settings, template_name)
+    if not raw_email_template:
+        frappe.log_error(
+            title="Email Template Not Found",
+            message=f"Email template '{template_name}' is not set in {doctype_settings}.",
+            reference_doctype=doc.doctype,
+            reference_name=doc.name
+        )
+        return
+    return frappe.render_template(raw_email_template, {"doc": doc.as_dict()})
+
+def _send_email(doc, recipients, subject, message):
+    """Send an email with the given recipients, subject, and message."""
+    if doc and recipients and subject and message:
+        if  doc.custom_email_sent == 1:
+            return
+        elif doc.custom_email_sent == 0:
+            email_args = {
+                "recipients": recipients,
+                "sender": None,
+                "subject": subject,
+                "message": message,
+                "now": True,
+                "attachments": [
+                    frappe.attach_print(
+                        doc.doctype,
+                        doc.name,
+                        file_name=doc.name,
+                        print_format=doc.doctype or None,
+                    )
+                ],
+            }
+            frappe.sendmail(delayed=False, **email_args)
+            # Set doc.custom_email_sent to 1 to indicate email was sent
+            doc.custom_email_sent = 1
+            doc.save()
+            frappe.db.commit()
+            # frappe.log_error(
+            #     title="Email Sent Successfully",
+            #     message=f"Email sent successfully to {', '.join(recipients)} for {doc.doctype} {doc.name}.",
+            #     reference_doctype=doc.doctype,
+            #     reference_name=doc.name
+            # )
+        else:
+            frappe.log_error(
+                title="Email Checkbox Error",
+                message=f"Checkbox not found in {doc.doctype} or custom_email_sent is not 0 or 1.",
+                reference_doctype=doc.doctype,
+                reference_name=doc.name
+            )
+    else:
+        frappe.log_error(
+            title="Email Sending Failed",
+            message="Failed to send email due to missing parameters.\n\n"
+            f"Recipients: {recipients}\nSubject: {subject}\nMessage: {message}",
+            reference_doctype=doc.doctype if doc else None,
+            reference_name=doc.name if doc else None
+        )
+
+#    /\
+#   /  \
+#    ||
+#    ||
+# ===> Functions to controle send email notification for Sales Order an Purchase Order <===
+
+def send_email_notification(doc, event):
+    try:
+        if doc.doctype == SEND_TO.PURCHASE["doctype"]:
+            contact_email = _get_email_address(doc, SEND_TO.PURCHASE["person"])
+            if not contact_email:
+                return
+            email_subject = _get_jinja(doc, SEND_TO.MAIL_SETTINGS, SEND_TO.PURCHASE["subject"], SEND_TO.PURCHASE["checkbox"])
+            email_message = _get_jinja(doc, SEND_TO.MAIL_SETTINGS, SEND_TO.PURCHASE["message"], SEND_TO.PURCHASE["checkbox"])
+            if not email_subject or not email_message:
+                return
+            _send_email(doc, [contact_email], email_subject, email_message)
+            
+        else:
+            # If the doctype is not Sales Order or Purchase Order, log an error and return
+            frappe.log_error(
+                title="Email Error: Invalid Doctype",
+                message="send_email_notification function called with unsupported doctype:"
+                f" {doc.doctype}\n\nEvent: {event}",
+                reference_doctype=doc.doctype,
+                reference_name=doc.name
+            )
+            
+    except Exception as e:
+        frappe.log_error(
+            title=f"Error sending email notification",
+            message=f"Error:\n{str(e)}\n\nTraceback:\n{frappe.get_traceback()}\n\nEvent: {event}",
+                reference_doctype=doc.doctype,
+                reference_name=doc.name
+        )
+
+
 class CustomMaintenanceVisit(MaintenanceVisit):
     
     def validate_purpose_table(self):
          return
+
