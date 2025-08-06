@@ -1,3 +1,4 @@
+from erpnext.maintenance.doctype.maintenance_visit.maintenance_visit import MaintenanceVisit
 import frappe
 from frappe.model.naming import make_autoname
 from frappe.desk.form.assign_to import add
@@ -279,6 +280,7 @@ def add_docperm_to_comm():
     if frappe.db.exists("DocPerm",{"parent": "Communication","role": "All","parentfield": "permissions",}):
         frappe.db.delete("DocPerm",{"parent": "Communication","role": "All","parentfield": "permissions",})
 
+
 # ===> Functions to controle send email notification for Sales Order an Purchase Order <===
 #    ||
 #    ||
@@ -425,3 +427,10 @@ def send_email_notification(doc, event):
                 reference_doctype=doc.doctype,
                 reference_name=doc.name
         )
+
+
+class CustomMaintenanceVisit(MaintenanceVisit):
+    
+    def validate_purpose_table(self):
+         return
+

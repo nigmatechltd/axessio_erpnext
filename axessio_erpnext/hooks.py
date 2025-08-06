@@ -139,7 +139,9 @@ after_migrate = "axessio_erpnext.overrides.run_after_migrate"
 # Override standard doctype classes
 
 override_doctype_class = {
-	"HD Ticket": "axessio_erpnext.overrides.CustomHDTicket"
+	"HD Ticket": "axessio_erpnext.overrides.CustomHDTicket",
+	"Maintenance Visit": "axessio_erpnext.overrides.CustomMaintenanceVisit",
+    
 }
 
 # Document Events
