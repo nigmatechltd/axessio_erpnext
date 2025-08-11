@@ -10,6 +10,17 @@ frappe.ui.form.on("Issue",{
         },"Issue Actions")
     },
 
+	custom_lease: function(frm) {
+		//set the value of lease customer if existing
+		
+		frappe.db.get_value("Lease", frm.doc.custom_lease,"lease_customer").then(lease_customer => {
+			if (lease_customer) {
+				cur_frm.set_value("customer", lease_customer["message"]["lease_customer"]);
+			}
+		});
+		
+	},
+
 	create_purchase_order: function (frm) {
 		const table_fields = [
 			{
